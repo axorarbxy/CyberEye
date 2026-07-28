@@ -1,4 +1,3 @@
-```
 // List of known AI service domains to watch for
 const AI_DOMAINS = [
   "chat.openai.com",
@@ -62,4 +61,4 @@ chrome.webRequest.onBeforeRequest.addListener(
   },
   { urls: ["<all_urls>"] },
   ["requestBody"]
-);```
+);

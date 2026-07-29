@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import UrlScanner from "./pages/UrlScanner";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function Home() {
   return (
@@ -19,7 +20,8 @@ function App() {
         <Link to="/" style={{ marginRight: "16px" }}>Home</Link>
         <Link to="/url-scanner" style={{ marginRight: "16px" }}>URL Scanner</Link>
         <Link to="/dashboard" style={{ marginRight: "16px" }}>Dashboard</Link>
-        <Link to="/login">Login</Link>
+        <Link to="/login" style={{ marginRight: "16px" }}>Login</Link>
+        <Link to="/register">Register</Link>
       </nav>
 
       <Routes>
@@ -27,6 +29,7 @@ function App() {
         <Route path="/url-scanner" element={<UrlScanner />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

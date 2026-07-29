@@ -3,6 +3,7 @@ import UrlScanner from "./pages/UrlScanner";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function Home() {
   return (
@@ -26,10 +27,24 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/url-scanner" element={<UrlScanner />} />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/url-scanner"
+          element={
+            <ProtectedRoute>
+              <UrlScanner />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

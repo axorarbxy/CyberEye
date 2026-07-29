@@ -16,17 +16,23 @@ function UrlScanner() {
     setResult(null);
 
     try {
+      const token = localStorage.getItem("cybereye_token");
+
       const response = await fetch("http://localhost:5000/api/scan/url", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({ url }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Scan request failed");
+        throw new Error(data.error || "Scan request failed");
       }
 
-      const data = await response.json();
       setResult(data);
     } catch (err) {
       setError(err.message);

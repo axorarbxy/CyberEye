@@ -1,4 +1,3 @@
-// List of known AI service domains to watch for
 const AI_DOMAINS = [
   "chat.openai.com",
   "api.openai.com",
@@ -9,10 +8,9 @@ const AI_DOMAINS = [
   "perplexity.ai"
 ];
 
-// Patterns that suggest sensitive data
 const SENSITIVE_PATTERNS = [
-  /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/, // email
-  /\b(?:\d[ -]*?){13,16}\b/,                         // card-like number
+  /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/,
+  /\b(?:\d[ -]*?){13,16}\b/,
   /api[_-]?key/i,
   /confidential/i,
   /internal[_-]?use[_-]?only/i
@@ -32,7 +30,22 @@ function containsSensitiveData(bodyText) {
   return SENSITIVE_PATTERNS.some(pattern => pattern.test(bodyText));
 }
 
-// Listen for outgoing requests
+function reportFlaggedEvent(url, domain, reason) {
+  fetch("http://localhost:5000/api/scan/shadow-ai", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url, domain, reason, timestamp: Date.now() })
+  }).catch((err) => {
+    console.error("Failed to report shadow AI event:", err);
+  });
+
+  chrome.storage.local.get(['flaggedEvents'], (result) => {
+    const events = result.flaggedEvents || [];
+    events.push({ url, domain, reason, timestamp: Date.now() });
+    chrome.storage.local.set({ flaggedEvents: events });
+  });
+}
+
 chrome.webRequest.onBeforeRequest.addListener(
   (details) => {
     if (isAiDomain(details.url)) {
@@ -48,14 +61,9 @@ chrome.webRequest.onBeforeRequest.addListener(
       }
 
       if (containsSensitiveData(bodyText)) {
+        const hostname = new URL(details.url).hostname;
         console.log("Shadow AI flagged:", details.url);
-
-        // TODO: send this event to backend API
-        // fetch("http://localhost:5000/api/scan/shadow-ai", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({ url: details.url, timestamp: Date.now() })
-        // });
+        reportFlaggedEvent(details.url, hostname, "Sensitive data pattern detected");
       }
     }
   },

@@ -26,6 +26,29 @@ router.post('/url', protect, async (req, res) => {
   }
 });
 
+// POST /api/scan/shadow-ai
+router.post('/shadow-ai', async (req, res) => {
+  try {
+    const { url, domain, reason, timestamp } = req.body;
+
+    if (!url || !domain) {
+      return res.status(400).json({ error: 'url and domain are required' });
+    }
+
+    const result = await ScanResult.create({
+      scanType: 'shadow-ai',
+      input: url,
+      riskScore: 1,
+      verdict: 'flagged',
+      details: { domain, reason, timestamp }
+    });
+
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/scan/history
 router.get('/history', protect, async (req, res) => {
   try {

@@ -1,9 +1,10 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UrlScanner from "./pages/UrlScanner";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Navbar from "./components/Navbar";
 
 function Home() {
   return (
@@ -17,13 +18,7 @@ function Home() {
 function App() {
   return (
     <BrowserRouter>
-      <nav style={{ padding: "16px", borderBottom: "1px solid #ccc" }}>
-        <Link to="/" style={{ marginRight: "16px" }}>Home</Link>
-        <Link to="/url-scanner" style={{ marginRight: "16px" }}>URL Scanner</Link>
-        <Link to="/dashboard" style={{ marginRight: "16px" }}>Dashboard</Link>
-        <Link to="/login" style={{ marginRight: "16px" }}>Login</Link>
-        <Link to="/register">Register</Link>
-      </nav>
+      <Navbar />
 
       <Routes>
         <Route path="/" element={<Home />} />

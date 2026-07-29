@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import RiskChart from "../components/RiskChart";
 
 function Dashboard() {
   const [scans, setScans] = useState([]);
@@ -51,36 +52,40 @@ function Dashboard() {
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {!loading && !error && (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ textAlign: "left", borderBottom: "2px solid #333" }}>
-              <th style={{ padding: "8px" }}>Type</th>
-              <th style={{ padding: "8px" }}>Input</th>
-              <th style={{ padding: "8px" }}>Verdict</th>
-              <th style={{ padding: "8px" }}>Risk Score</th>
-              <th style={{ padding: "8px" }}>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {scans.length === 0 ? (
-              <tr>
-                <td colSpan="5" style={{ padding: "8px" }}>No scans yet.</td>
+        <>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ textAlign: "left", borderBottom: "2px solid #333" }}>
+                <th style={{ padding: "8px" }}>Type</th>
+                <th style={{ padding: "8px" }}>Input</th>
+                <th style={{ padding: "8px" }}>Verdict</th>
+                <th style={{ padding: "8px" }}>Risk Score</th>
+                <th style={{ padding: "8px" }}>Time</th>
               </tr>
-            ) : (
-              scans.map((scan) => (
-                <tr key={scan._id} style={{ borderBottom: "1px solid #eee" }}>
-                  <td style={{ padding: "8px" }}>{scan.scanType}</td>
-                  <td style={{ padding: "8px" }}>{scan.input}</td>
-                  <td style={{ padding: "8px" }}>{scan.verdict}</td>
-                  <td style={{ padding: "8px" }}>{scan.riskScore}</td>
-                  <td style={{ padding: "8px" }}>
-                    {new Date(scan.createdAt).toLocaleString()}
-                  </td>
+            </thead>
+            <tbody>
+              {scans.length === 0 ? (
+                <tr>
+                  <td colSpan="5" style={{ padding: "8px" }}>No scans yet.</td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                scans.map((scan) => (
+                  <tr key={scan._id} style={{ borderBottom: "1px solid #eee" }}>
+                    <td style={{ padding: "8px" }}>{scan.scanType}</td>
+                    <td style={{ padding: "8px" }}>{scan.input}</td>
+                    <td style={{ padding: "8px" }}>{scan.verdict}</td>
+                    <td style={{ padding: "8px" }}>{scan.riskScore}</td>
+                    <td style={{ padding: "8px" }}>
+                      {new Date(scan.createdAt).toLocaleString()}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          <RiskChart scans={scans} />
+        </>
       )}
     </div>
   );

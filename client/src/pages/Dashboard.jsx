@@ -14,11 +14,20 @@ function Dashboard() {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:5000/api/scan/history");
-      if (!response.ok) {
-        throw new Error("Failed to fetch scan history");
-      }
+      const token = localStorage.getItem("cybereye_token");
+
+      const response = await fetch("http://localhost:5000/api/scan/history", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch scan history");
+      }
+
       setScans(data);
     } catch (err) {
       setError(err.message);
@@ -66,29 +75,4 @@ function Dashboard() {
             <tbody>
               {scans.length === 0 ? (
                 <tr>
-                  <td colSpan="5" style={{ padding: "8px" }}>No scans yet.</td>
-                </tr>
-              ) : (
-                scans.map((scan) => (
-                  <tr key={scan._id} style={{ borderBottom: "1px solid #eee" }}>
-                    <td style={{ padding: "8px" }}>{scan.scanType}</td>
-                    <td style={{ padding: "8px" }}>{scan.input}</td>
-                    <td style={{ padding: "8px" }}>{scan.verdict}</td>
-                    <td style={{ padding: "8px" }}>{scan.riskScore}</td>
-                    <td style={{ padding: "8px" }}>
-                      {new Date(scan.createdAt).toLocaleString()}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-
-          <RiskChart scans={scans} />
-        </>
-      )}
-    </div>
-  );
-}
-
-export default Dashboard;
+                  <td

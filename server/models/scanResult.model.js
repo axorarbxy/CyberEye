@@ -22,6 +22,10 @@ const scanResultSchema = new mongoose.Schema({
     type: Object
   },
   scannedBy: {
+    type: mongoose.Schema.Types.ObjectID,
+    ref: 'User'
+  },
+  createdAt: {
     type: Date,
     default: Date.now
   }

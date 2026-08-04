@@ -61,5 +61,29 @@ function PasswordChecker() {
             marginBottom: "10px"
           }}>
             <div style={{
-              height:"100%"
-        
+              height:"100%",
+              width: '${(result.score / 5) * 100}% ',
+              backgroundColor: result.color,
+              transition: "width 0.3s"
+            }}/>
+          </div>
+
+          <p style={{ fontWeight:"bold",color:result.color}}>
+            {result.label}
+          </p>
+
+          {result.feedback.length > 0 && (
+            <ul style={{ marginTop:"10px",paddingLeft:"20px"}}>
+              {result.feedback.map((f,i) => (
+                <li key={i} style={{ fontSize:"13px",color:"#666"}}>{f}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default PasswordChecker;
+      

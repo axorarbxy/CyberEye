@@ -75,4 +75,29 @@ function Dashboard() {
             <tbody>
               {scans.length === 0 ? (
                 <tr>
-                  <td
+                  <td colSpan="5" style={{ padding: "8px" }}>No scans yet.</td>
+                </tr>
+              ) : (
+                scans.map((scan) => (
+                  <tr key={scan._id} style={{ borderBottom: "1px solid #eee" }}>
+                    <td style={{ padding: "8px" }}>{scan.scanType}</td>
+                    <td style={{ padding: "8px" }}>{scan.input}</td>
+                    <td style={{ padding: "8px" }}>{scan.verdict}</td>
+                    <td style={{ padding: "8px" }}>{scan.riskScore}</td>
+                    <td style={{ padding: "8px" }}>
+                      {new Date(scan.createdAt).toLocaleString()}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          <RiskChart scans={scans} />
+        </>
+      )}
+    </div>
+  );
+}
+
+export default Dashboard;

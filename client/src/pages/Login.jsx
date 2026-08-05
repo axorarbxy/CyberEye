@@ -1,36 +1,31 @@
 import { useState } from "react";
+import API_URL from "../config";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.error || "Login failed");
       }
-
       localStorage.setItem("cybereye_token", data.token);
       localStorage.setItem("cybereye_user", JSON.stringify({
         name: data.name,
         email: data.email,
         role: data.role
       }));
-
       window.location.href = "/dashboard";
     } catch (err) {
       setError(err.message);
@@ -38,7 +33,6 @@ function Login() {
       setLoading(false);
     }
   };
-
   const labelStyle = {
     display: "block",
     marginBottom: "6px",
@@ -46,7 +40,6 @@ function Login() {
     fontWeight: 600,
     color: "var(--text-dim)",
   };
-
   const inputStyle = {
     width: "100%",
     padding: "10px 12px",
@@ -58,7 +51,6 @@ function Login() {
     fontSize: "14px",
     outline: "none",
   };
-
   return (
     <div style={{
       minHeight: "calc(100vh - 65px)",
@@ -79,7 +71,6 @@ function Login() {
         <p style={{ color: "var(--text-dim)", fontSize: "14px", marginBottom: "24px" }}>
           Log in to your Cybereye account
         </p>
-
         <form onSubmit={handleLogin}>
           <div style={{ marginBottom: "16px" }}>
             <label style={labelStyle}>Email</label>
@@ -91,7 +82,6 @@ function Login() {
               style={inputStyle}
             />
           </div>
-
           <div style={{ marginBottom: "16px" }}>
             <label style={labelStyle}>Password</label>
             <input
@@ -102,13 +92,11 @@ function Login() {
               style={inputStyle}
             />
           </div>
-
           {error && (
             <p style={{ color: "var(--danger)", fontSize: "13px", marginBottom: "12px" }}>
               {error}
             </p>
           )}
-
           <button
             type="submit"
             disabled={loading}
@@ -133,5 +121,4 @@ function Login() {
     </div>
   );
 }
-
 export default Login;

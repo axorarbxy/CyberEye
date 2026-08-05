@@ -86,5 +86,52 @@ function Dashboard() {
                   <th style={{ padding: "12px 16px", color: "var(--text-dim)", fontSize: "13px", fontWeight: 600 }}>Risk Score</th>
                   <th style={{ padding: "12px 16px", color: "var(--text-dim)", fontSize: "13px", fontWeight: 600 }}>Time</th>
                 </tr>
-                  <th style={{ padding: "12px 16px", color: "var(--text-dim)", fontSize: "13px", fontWeight: 600 }}>Verdict</th>
-                  <th style={{ padding: "12px 16px", color: "var(--text-dim)",
+              </thead>
+              <tbody>
+                {scans.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" style={{ padding: "16px", color: "var(--text-dim)" }}>
+                      No scans yet.
+                    </td>
+                  </tr>
+                ) : (
+                  scans.map((scan) => {
+                    const isSafe = scan.verdict === "safe";
+                    return (
+                      <tr key={scan._id} style={{ borderTop: "1px solid var(--border)" }}>
+                        <td style={{ padding: "12px 16px", fontSize: "14px" }}>{scan.scanType}</td>
+                        <td style={{ padding: "12px 16px", fontSize: "14px", color: "var(--text-dim)" }}>{scan.input}</td>
+                        <td style={{ padding: "12px 16px", fontSize: "14px" }}>
+                          <span style={{
+                            padding: "2px 10px",
+                            borderRadius: "999px",
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            background: isSafe ? "rgba(74, 222, 128, 0.15)" : "rgba(248, 113, 113, 0.15)",
+                            color: isSafe ? "var(--success)" : "var(--danger)",
+                          }}>
+                            {scan.verdict}
+                          </span>
+                        </td>
+                        <td style={{ padding: "12px 16px", fontSize: "14px" }}>{scan.riskScore}</td>
+                        <td style={{ padding: "12px 16px", fontSize: "14px", color: "var(--text-dim)" }}>
+                          {new Date(scan.createdAt).toLocaleString()}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ marginTop: "24px" }}>
+            <RiskChart scans={scans} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default Dashboard;

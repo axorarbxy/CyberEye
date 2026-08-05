@@ -9,9 +9,16 @@ import Navbar from "./components/Navbar";
 
 function Home() {
   return (
-    <div style={{ padding: "24px" }}>
-      <h1>Cybereye</h1>
-      <p>AI-Driven Threat Detection Platform</p>
+    <div style={{
+      padding: "80px 32px",
+      textAlign: "center",
+      maxWidth: "700px",
+      margin: "0 auto",
+    }}>
+      <h1 style={{ fontSize: "42px", marginBottom: "12px" }}>Cybereye</h1>
+      <p style={{ color: "var(--text-dim)", fontSize: "18px" }}>
+        AI-Driven Threat Detection Platform
+      </p>
     </div>
   );
 }

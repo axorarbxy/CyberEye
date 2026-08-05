@@ -24,7 +24,6 @@ function Login() {
         throw new Error(data.error || "Login failed");
       }
 
-      // Store token for future authenticated requests
       localStorage.setItem("cybereye_token", data.token);
       localStorage.setItem("cybereye_user", JSON.stringify({
         name: data.name,
@@ -40,42 +39,97 @@ function Login() {
     }
   };
 
+  const labelStyle = {
+    display: "block",
+    marginBottom: "6px",
+    fontSize: "13px",
+    fontWeight: 600,
+    color: "var(--text-dim)",
+  };
+
+  const inputStyle = {
+    width: "100%",
+    padding: "10px 12px",
+    marginTop: "4px",
+    background: "var(--bg)",
+    border: "1px solid var(--border)",
+    borderRadius: "6px",
+    color: "var(--text)",
+    fontSize: "14px",
+    outline: "none",
+  };
+
   return (
-    <div style={{ padding: "24px", maxWidth: "400px", margin: "60px auto" }}>
-      <h1>Login</h1>
-      <form onSubmit={handleLogin}>
-        <div style={{ marginBottom: "12px" }}>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px", marginTop: "4px" }}
-          />
-        </div>
+    <div style={{
+      minHeight: "calc(100vh - 65px)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px",
+    }}>
+      <div style={{
+        width: "100%",
+        maxWidth: "400px",
+        background: "var(--bg-panel)",
+        border: "1px solid var(--border)",
+        borderRadius: "12px",
+        padding: "32px",
+      }}>
+        <h1 style={{ fontSize: "24px", marginBottom: "4px" }}>Welcome back</h1>
+        <p style={{ color: "var(--text-dim)", fontSize: "14px", marginBottom: "24px" }}>
+          Log in to your Cybereye account
+        </p>
 
-        <div style={{ marginBottom: "12px" }}>
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px", marginTop: "4px" }}
-          />
-        </div>
+        <form onSubmit={handleLogin}>
+          <div style={{ marginBottom: "16px" }}>
+            <label style={labelStyle}>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              style={inputStyle}
+            />
+          </div>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+          <div style={{ marginBottom: "16px" }}>
+            <label style={labelStyle}>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={inputStyle}
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ padding: "10px 20px", cursor: "pointer" }}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+          {error && (
+            <p style={{ color: "var(--danger)", fontSize: "13px", marginBottom: "12px" }}>
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: "100%",
+              padding: "12px",
+              background: "var(--accent)",
+              color: "#0B1220",
+              border: "none",
+              borderRadius: "6px",
+              fontSize: "14px",
+              fontWeight: 600,
+              cursor: loading ? "default" : "pointer",
+              opacity: loading ? 0.7 : 1,
+              marginTop: "8px",
+            }}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

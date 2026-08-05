@@ -1,4 +1,5 @@
 import { useState } from "react";
+import API_URL from "../config";
 
 function UrlScanner() {
   const [url, setUrl] = useState("");
@@ -18,7 +19,7 @@ function UrlScanner() {
     try {
       const token = localStorage.getItem("cybereye_token");
 
-      const response = await fetch("http://localhost:5000/api/scan/url", {
+      const response = await fetch(`${API_URL}/api/scan/url`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

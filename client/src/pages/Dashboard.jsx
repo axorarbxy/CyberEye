@@ -14,20 +14,11 @@ function Dashboard() {
     setLoading(true);
     setError("");
     try {
-      const token = localStorage.getItem("cybereye_token");
-
-      const response = await fetch("http://localhost:5000/api/scan/history", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-
-      const data = await response.json();
-
+      const response = await fetch("http://localhost:5000/api/scan/history");
       if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch scan history");
+        throw new Error("Failed to fetch scan history");
       }
-
+      const data = await response.json();
       setScans(data);
     } catch (err) {
       setError(err.message);
@@ -41,63 +32,55 @@ function Dashboard() {
     (s) => s.verdict !== "safe" && s.verdict !== "not-implemented"
   ).length;
 
+  const cardStyle = {
+    padding: "20px",
+    border: "1px solid var(--border)",
+    borderRadius: "10px",
+    flex: 1,
+    background: "var(--bg-panel)",
+  };
+
   return (
-    <div style={{ padding: "24px", maxWidth: "900px", margin: "0 auto" }}>
-      <h1>Dashboard</h1>
-      <p>Overview of recent scans and flagged threats.</p>
+    <div style={{ padding: "40px 32px", maxWidth: "1000px", margin: "0 auto" }}>
+      <h1 style={{ fontSize: "28px", marginBottom: "4px" }}>Dashboard</h1>
+      <p style={{ color: "var(--text-dim)", marginBottom: "24px" }}>
+        Overview of recent scans and flagged threats.
+      </p>
 
       <div style={{ display: "flex", gap: "16px", margin: "20px 0" }}>
-        <div style={{ padding: "16px", border: "1px solid #ccc", borderRadius: "8px", flex: 1 }}>
-          <h3>Total Scans</h3>
-          <p style={{ fontSize: "28px", margin: 0 }}>{totalScans}</p>
+        <div style={cardStyle}>
+          <h3 style={{ color: "var(--text-dim)", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            Total Scans
+          </h3>
+          <p style={{ fontSize: "32px", margin: "8px 0 0", fontWeight: 700, color: "var(--accent)" }}>
+            {totalScans}
+          </p>
         </div>
-        <div style={{ padding: "16px", border: "1px solid #ccc", borderRadius: "8px", flex: 1 }}>
-          <h3>Flagged</h3>
-          <p style={{ fontSize: "28px", margin: 0, color: "red" }}>{flaggedScans}</p>
+        <div style={cardStyle}>
+          <h3 style={{ color: "var(--text-dim)", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            Flagged
+          </h3>
+          <p style={{ fontSize: "32px", margin: "8px 0 0", fontWeight: 700, color: "var(--danger)" }}>
+            {flaggedScans}
+          </p>
         </div>
       </div>
 
-      {loading && <p>Loading scan history...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {loading && <p style={{ color: "var(--text-dim)" }}>Loading scan history...</p>}
+      {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
 
       {!loading && !error && (
         <>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ textAlign: "left", borderBottom: "2px solid #333" }}>
-                <th style={{ padding: "8px" }}>Type</th>
-                <th style={{ padding: "8px" }}>Input</th>
-                <th style={{ padding: "8px" }}>Verdict</th>
-                <th style={{ padding: "8px" }}>Risk Score</th>
-                <th style={{ padding: "8px" }}>Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {scans.length === 0 ? (
-                <tr>
-                  <td colSpan="5" style={{ padding: "8px" }}>No scans yet.</td>
-                </tr>
-              ) : (
-                scans.map((scan) => (
-                  <tr key={scan._id} style={{ borderBottom: "1px solid #eee" }}>
-                    <td style={{ padding: "8px" }}>{scan.scanType}</td>
-                    <td style={{ padding: "8px" }}>{scan.input}</td>
-                    <td style={{ padding: "8px" }}>{scan.verdict}</td>
-                    <td style={{ padding: "8px" }}>{scan.riskScore}</td>
-                    <td style={{ padding: "8px" }}>
-                      {new Date(scan.createdAt).toLocaleString()}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-
-          <RiskChart scans={scans} />
-        </>
-      )}
-    </div>
-  );
-}
-
-export default Dashboard;
+          <div style={{
+            border: "1px solid var(--border)",
+            borderRadius: "10px",
+            overflow: "hidden",
+            marginTop: "8px",
+          }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ textAlign: "left", background: "var(--bg-panel)" }}>
+                  <th style={{ padding: "12px 16px", color: "var(--text-dim)", fontSize: "13px", fontWeight: 600 }}>Type</th>
+                  <th style={{ padding: "12px 16px", color: "var(--text-dim)", fontSize: "13px", fontWeight: 600 }}>Input</th>
+                  <th style={{ padding: "12px 16px", color: "var(--text-dim)", fontSize: "13px", fontWeight: 600 }}>Verdict</th>
+                  <th style={{ padding: "12px 16px", color: "var(--text-dim)",

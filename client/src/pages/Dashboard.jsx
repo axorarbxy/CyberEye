@@ -14,7 +14,12 @@ function Dashboard() {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:5000/api/scan/history");
+      const token = localStorage.getItem("cybereye_token");
+      const response = await fetch("http://localhost:5000/api/scan/history", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
       if (!response.ok) {
         throw new Error("Failed to fetch scan history");
       }

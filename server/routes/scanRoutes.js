@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const ScanResult = require('../models/scanResult.model');
 const { protect } = require('../middleware/authMiddleware');
+
+const upload = multer({ dest: 'uploads/' });
 
 // POST /api/scan/url
 router.post('/url', protect, async (req, res) => {
@@ -17,6 +20,32 @@ router.post('/url', protect, async (req, res) => {
       riskScore: 0,
       verdict: 'not-implemented',
       details: {},
+      scannedBy: req.user._id
+    });
+
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/scan/malware
+router.post('/malware', protect, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'File is required' });
+    }
+
+    const result = await ScanResult.create({
+      scanType: 'malware',
+      input: req.file.originalname,
+      riskScore: 0,
+      verdict: 'not-implemented',
+      details: {
+        size: req.file.size,
+        mimetype: req.file.mimetype,
+        storedPath: req.file.path
+      },
       scannedBy: req.user._id
     });
 

@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import PasswordChecker from "./pages/PasswordChecker";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import Settings from "./pages/Settings";
 
 function Home() {
   return (

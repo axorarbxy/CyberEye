@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import RiskChart from "../components/RiskChart";
+import CountUp from "../components/CountUp";
 
 function Dashboard() {
   const [scans, setScans] = useState([]);
@@ -58,7 +59,7 @@ function Dashboard() {
             Total Scans
           </h3>
           <p style={{ fontSize: "32px", margin: "8px 0 0", fontWeight: 700, color: "var(--accent)" }}>
-            {totalScans}
+            <CountUp value={totalScans} />
           </p>
         </div>
         <div style={cardStyle}>
@@ -66,7 +67,7 @@ function Dashboard() {
             Flagged
           </h3>
           <p style={{ fontSize: "32px", margin: "8px 0 0", fontWeight: 700, color: "var(--danger)" }}>
-            {flaggedScans}
+            <CountUp value={flaggedScans} />
           </p>
         </div>
       </div>

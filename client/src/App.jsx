@@ -8,6 +8,7 @@ import PasswordChecker from "./pages/PasswordChecker";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import Settings from "./pages/Settings";
+import BlurText from "./components/BlurText";
 
 function Home() {
   return (

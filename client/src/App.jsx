@@ -12,8 +12,12 @@ import Settings from "./pages/Settings";
 function Home() {
   return (
     <div style={{ padding: "24px" }}>
-      <h1>Cybereye</h1>
-      <p>AI-Driven Threat Detection Platform</p>
+      <h1 style={{ fontSize: "32px" }}>
+        <BlurText text="Cybereye" />
+      </h1>
+      <p>
+        <BlurText text="AI-Driven Threat Detection Platform" delay={0.04} />
+      </p>
     </div>
   );
 }

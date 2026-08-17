@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score, classification_report
 import joblib
 from extract_features import extract_features
 
-df = pd.read_csv("../data/phishing_site_urls.csv")
+df = pd.read_csv("../data/phishing_site_urls_v2.csv")
 
 print("Columns found:", df.columns.tolist())
 print("Shape:", df.shape)

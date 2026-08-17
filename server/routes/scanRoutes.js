@@ -14,14 +14,27 @@ router.post('/url', protect, async (req, res) => {
       return res.status(400).json({ error: 'URL is required' });
     }
 
+    const mlResponse = await fetch('http://localhost:8000/predict-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const mlData = await mlResponse.json();
+
     const result = await ScanResult.create({
       scanType: 'url',
       input: url,
-      riskScore: 0,
-      verdict: 'not-implemented',
-      details: {},
+      riskScore: mlData.confidence,
+      verdict: mlData.is_phishing ? 'malicious' : 'safe',
+      details: { is_phishing: mlData.is_phishing, confidence: mlData.confidence },
       scannedBy: req.user._id
     });
+
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
     res.status(201).json(result);
   } catch (err) {

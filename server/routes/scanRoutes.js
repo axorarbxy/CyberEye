@@ -3,6 +3,9 @@ const router = express.Router();
 const multer = require('multer');
 const { Jimp } = require('jimp');
 const QrCodeReader = require('qrcode-reader');
+const axios = require('axios');
+const FormData = require('form-data');
+const fs = require('fs');
 const ScanResult = require('../models/scanResult.model');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -45,15 +48,58 @@ router.post('/malware', protect, upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'File is required' });
     }
 
+    const apiKey = process.env.VIRUSTOTAL_API_KEY;
+
+    // Step 1: Upload file to VirusTotal
+    const form = new FormData();
+    form.append('file', fs.createReadStream(req.file.path), req.file.originalname);
+
+    const uploadResponse = await axios.post(
+      'https://www.virustotal.com/api/v3/files',
+      form,
+      { headers: { ...form.getHeaders(), 'x-apikey': apiKey } }
+    );
+
+    const analysisId = uploadResponse.data.data.id;
+
+    // Step 2: Poll until analysis completes (VirusTotal takes a few seconds)
+    let status = 'queued';
+    let stats = null;
+
+    for (let i = 0; i < 10; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      const analysisResponse = await axios.get(
+        `https://www.virustotal.com/api/v3/analyses/${analysisId}`,
+        { headers: { 'x-apikey': apiKey } }
+      );
+
+      status = analysisResponse.data.data.attributes.status;
+      stats = analysisResponse.data.data.attributes.stats;
+
+      if (status === 'completed') break;
+    }
+
+    if (status !== 'completed') {
+      throw new Error('Scan is taking longer than expected. Try again shortly.');
+    }
+
+    const maliciousCount = stats.malicious || 0;
+    const totalEngines = maliciousCount + stats.harmless + stats.suspicious + stats.undetected;
+    const isMalicious = maliciousCount > 0;
+
+    // Clean up the temp uploaded file
+    fs.unlink(req.file.path, () => {});
+
     const result = await ScanResult.create({
       scanType: 'malware',
       input: req.file.originalname,
-      riskScore: 0,
-      verdict: 'not-implemented',
+      riskScore: totalEngines > 0 ? maliciousCount / totalEngines : 0,
+      verdict: isMalicious ? 'malicious' : 'safe',
       details: {
-        size: req.file.size,
-        mimetype: req.file.mimetype,
-        storedPath: req.file.path
+        maliciousCount,
+        totalEngines,
+        stats
       },
       scannedBy: req.user._id
     });
@@ -71,7 +117,6 @@ router.post('/qr', protect, upload.single('qr'), async (req, res) => {
       return res.status(400).json({ error: 'QR image is required' });
     }
 
-    // Decode the QR code from the uploaded image
     const image = await Jimp.read(req.file.path);
     const qr = new QrCodeReader();
 
@@ -83,7 +128,6 @@ router.post('/qr', protect, upload.single('qr'), async (req, res) => {
       qr.decode(image.bitmap);
     });
 
-    // Resolve the final URL after following any redirects (e.g. shorteners)
     let finalUrl = decodedUrl;
     try {
       const redirectCheck = await fetch(decodedUrl, { method: 'GET', redirect: 'follow' });
@@ -94,7 +138,6 @@ router.post('/qr', protect, upload.single('qr'), async (req, res) => {
       finalUrl = decodedUrl;
     }
 
-    // Feed the final resolved URL into the trained phishing model
     const mlResponse = await fetch('http://localhost:8000/predict-url', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -1,10 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UrlScanner from "./pages/UrlScanner";
 import MalwareScanner from "./pages/MalwareScanner";
+import QrScanner from "./pages/QrScanner";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import PasswordChecker from "./pages/PasswordChecker";
+import AiChatbot from "./pages/AiChatbot";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import Settings from "./pages/Settings";
@@ -46,6 +48,22 @@ function App() {
           element={
             <ProtectedRoute>
               <MalwareScanner />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/qr-scanner"
+          element={
+            <ProtectedRoute>
+              <QrScanner />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ai-chatbot"
+          element={
+            <ProtectedRoute>
+              <AiChatbot />
             </ProtectedRoute>
           }
         />

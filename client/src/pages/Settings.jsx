@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import AnimatedButton from "../components/AnimatedButton";
 
 function Settings() {
   const [user, setUser] = useState(null);
@@ -11,8 +12,23 @@ function Settings() {
     }
   }, []);
 
-  const handleClearHistory = () => {
-    setMessage("This would clear your scan history (not yet connected to backend).");
+  const handleClearHistory = async () => {
+    try {
+      const token = localStorage.getItem("cybereye_token");
+      const response = await fetch("http://localhost:5000/api/scan/history", {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to clear history");
+      }
+      setMessage(`Cleared ${data.deletedCount} scan(s) from your history.`);
+    } catch (err) {
+      setMessage(`Error: ${err.message}`);
+    }
   };
 
   const handleLogoutAllDevices = () => {
@@ -59,19 +75,12 @@ function Settings() {
         <h3 style={{ fontSize: "14px", color: "var(--text-dim)", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
           Data
         </h3>
-        <button
+        <AnimatedButton
           onClick={handleClearHistory}
-          style={{
-            padding: "8px 16px",
-            cursor: "pointer",
-            borderRadius: "8px",
-            border: "1px solid var(--border)",
-            background: "transparent",
-            color: "var(--text)"
-          }}
+          style={{ background: "transparent", border: "1px solid var(--border)", color: "var(--text)" }}
         >
           Clear Scan History
-        </button>
+        </AnimatedButton>
       </div>
 
       <div style={{
@@ -83,20 +92,12 @@ function Settings() {
         <h3 style={{ fontSize: "14px", color: "var(--danger)", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
           Danger Zone
         </h3>
-        <button
+        <AnimatedButton
           onClick={handleLogoutAllDevices}
-          style={{
-            padding: "8px 16px",
-            cursor: "pointer",
-            borderRadius: "8px",
-            border: "none",
-            background: "var(--danger)",
-            color: "#fff",
-            fontWeight: 600
-          }}
+          style={{ background: "var(--danger)" }}
         >
           Logout
-        </button>
+        </AnimatedButton>
       </div>
 
       {message && <p style={{ marginTop: "16px", color: "var(--text-dim)" }}>{message}</p>}

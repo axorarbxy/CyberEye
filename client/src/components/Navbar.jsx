@@ -44,6 +44,7 @@ function Navbar() {
             <Link to="/url-scanner" style={linkStyle}>URL Scanner</Link>
             <Link to="/malware-scanner" style={linkStyle}>Malware Scanner</Link>
             <Link to="/qr-scanner" style={linkStyle}>QR Scanner</Link>
+            <Link to="/android-scanner" style={linkStyle}>Android Scanner</Link>
             <Link to="/password-checker" style={linkStyle}>Password Checker</Link>
             <Link to="/ai-chatbot" style={linkStyle}>AI Chatbot</Link>
             <Link to="/dashboard" style={linkStyle}>Dashboard</Link>

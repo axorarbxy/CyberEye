@@ -1,5 +1,5 @@
 import { useState } from "react";
-import API_URL from "../config";
+import AnimatedButton from "../components/AnimatedButton";
 
 function UrlScanner() {
   const [url, setUrl] = useState("");
@@ -19,7 +19,7 @@ function UrlScanner() {
     try {
       const token = localStorage.getItem("cybereye_token");
 
-      const response = await fetch(`${API_URL}/api/scan/url`, {
+      const response = await fetch("http://localhost:5000/api/scan/url", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,13 +55,9 @@ function UrlScanner() {
         style={{ width: "100%", padding: "10px", fontSize: "14px" }}
       />
 
-      <button
-        onClick={handleScan}
-        disabled={loading}
-        style={{ marginTop: "12px", padding: "10px 20px", cursor: "pointer" }}
-      >
+      <AnimatedButton onClick={handleScan} disabled={loading} style={{ marginTop: "12px" }}>
         {loading ? "Scanning..." : "Scan URL"}
-      </button>
+      </AnimatedButton>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 

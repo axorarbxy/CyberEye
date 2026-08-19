@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const Jimp = require('jimp');
+const { Jimp } = require('jimp');
 const QrCodeReader = require('qrcode-reader');
 const ScanResult = require('../models/scanResult.model');
 const { protect } = require('../middleware/authMiddleware');

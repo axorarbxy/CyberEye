@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AnimatedButton from "../components/AnimatedButton";
 
 function QrScanner() {
   const [file, setFile] = useState(null);
@@ -73,22 +74,11 @@ function QrScanner() {
         }}
       />
 
-      <button
-        onClick={handleScan}
-        disabled={loading}
-        style={{
-          marginTop: "16px",
-          padding: "10px 24px",
-          cursor: "pointer",
-          borderRadius: "8px",
-          border: "none",
-          background: "var(--accent)",
-          color: "#fff",
-          fontWeight: 600
-        }}
-      >
-        {loading ? "Scanning..." : "Scan QR Code"}
-      </button>
+      <div style={{ marginTop: "16px" }}>
+        <AnimatedButton onClick={handleScan} disabled={loading}>
+          {loading ? "Scanning..." : "Scan QR Code"}
+        </AnimatedButton>
+      </div>
 
       {error && <p style={{ color: "var(--danger)", marginTop: "12px" }}>{error}</p>}
 

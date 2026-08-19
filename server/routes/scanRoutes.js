@@ -50,7 +50,6 @@ router.post('/malware', protect, upload.single('file'), async (req, res) => {
 
     const apiKey = process.env.VIRUSTOTAL_API_KEY;
 
-    // Step 1: Upload file to VirusTotal
     const form = new FormData();
     form.append('file', fs.createReadStream(req.file.path), req.file.originalname);
 
@@ -62,7 +61,6 @@ router.post('/malware', protect, upload.single('file'), async (req, res) => {
 
     const analysisId = uploadResponse.data.data.id;
 
-    // Step 2: Poll until analysis completes (VirusTotal takes a few seconds)
     let status = 'queued';
     let stats = null;
 
@@ -88,7 +86,6 @@ router.post('/malware', protect, upload.single('file'), async (req, res) => {
     const totalEngines = maliciousCount + stats.harmless + stats.suspicious + stats.undetected;
     const isMalicious = maliciousCount > 0;
 
-    // Clean up the temp uploaded file
     fs.unlink(req.file.path, () => {});
 
     const result = await ScanResult.create({
@@ -100,6 +97,31 @@ router.post('/malware', protect, upload.single('file'), async (req, res) => {
         maliciousCount,
         totalEngines,
         stats
+      },
+      scannedBy: req.user._id
+    });
+
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/scan/android
+router.post('/android', protect, upload.single('apk'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'APK file is required' });
+    }
+
+    const result = await ScanResult.create({
+      scanType: 'malware',
+      input: req.file.originalname,
+      riskScore: 0,
+      verdict: 'not-implemented',
+      details: {
+        size: req.file.size,
+        note: 'Android/APK analysis not yet implemented — real detection would need APK permission parsing (e.g. via apktool) or a VirusTotal file scan like the Malware Scanner uses'
       },
       scannedBy: req.user._id
     });

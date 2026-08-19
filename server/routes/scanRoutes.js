@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const Jimp = require('jimp');
+const QrCodeReader = require('qrcode-reader');
 const ScanResult = require('../models/scanResult.model');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -29,12 +31,6 @@ router.post('/url', protect, async (req, res) => {
       details: { is_phishing: mlData.is_phishing, confidence: mlData.confidence },
       scannedBy: req.user._id
     });
-
-    res.status(201).json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
     res.status(201).json(result);
   } catch (err) {
@@ -75,22 +71,36 @@ router.post('/qr', protect, upload.single('qr'), async (req, res) => {
       return res.status(400).json({ error: 'QR image is required' });
     }
 
-    // TODO: decode QR image (e.g. with 'jsqr' or 'qrcode-reader') and extract URL,
-    // then feed that URL into the same phishing risk logic as /url
+    // Decode the QR code from the uploaded image
+    const image = await Jimp.read(req.file.path);
+    const qr = new QrCodeReader();
+
+    const decodedUrl = await new Promise((resolve, reject) => {
+      qr.callback = (err, value) => {
+        if (err || !value) return reject(new Error('Could not decode QR code'));
+        resolve(value.result);
+      };
+      qr.decode(image.bitmap);
+    });
+
+    // Feed the decoded URL into the same trained phishing model
+    const mlResponse = await fetch('http://localhost:8000/predict-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: decodedUrl })
+    });
+    const mlData = await mlResponse.json();
 
     const result = await ScanResult.create({
       scanType: 'url',
-      input: req.file.originalname,
-      riskScore: 0,
-      verdict: 'not-implemented',
-      details: {
-        source: 'qr-upload',
-        size: req.file.size
-      },
+      input: decodedUrl,
+      riskScore: mlData.confidence,
+      verdict: mlData.is_phishing ? 'malicious' : 'safe',
+      details: { source: 'qr-upload', is_phishing: mlData.is_phishing, confidence: mlData.confidence },
       scannedBy: req.user._id
     });
 
-    res.status(201).json({ ...result.toObject(), decodedUrl: null });
+    res.status(201).json({ ...result.toObject(), decodedUrl });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -126,6 +136,16 @@ router.get('/history', protect, async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(50);
     res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /api/scan/history
+router.delete('/history', protect, async (req, res) => {
+  try {
+    const result = await ScanResult.deleteMany({ scannedBy: req.user._id });
+    res.json({ message: 'Scan history cleared', deletedCount: result.deletedCount });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

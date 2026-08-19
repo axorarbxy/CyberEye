@@ -86,9 +86,11 @@ router.post('/qr', protect, upload.single('qr'), async (req, res) => {
     // Resolve the final URL after following any redirects (e.g. shorteners)
     let finalUrl = decodedUrl;
     try {
-      const redirectCheck = await fetch(decodedUrl, { method: 'HEAD', redirect: 'follow' });
+      const redirectCheck = await fetch(decodedUrl, { method: 'GET', redirect: 'follow' });
       finalUrl = redirectCheck.url;
+      console.log('Redirect resolved:', decodedUrl, '->', finalUrl);
     } catch (e) {
+      console.log('Redirect check failed:', e.message);
       finalUrl = decodedUrl;
     }
 

@@ -66,7 +66,7 @@ router.post('/malware', protect, upload.single('file'), async (req, res) => {
     let status = 'queued';
     let stats = null;
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
       const analysisResponse = await axios.get(

@@ -1,4 +1,4 @@
- import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -42,8 +42,16 @@ function Navbar() {
         {token && (
           <>
             <Link to="/url-scanner" style={linkStyle}>URL Scanner</Link>
+            <Link to="/malware-scanner" style={linkStyle}>Malware Scanner</Link>
+            <Link to="/qr-scanner" style={linkStyle}>QR Scanner</Link>
+            <Link to="/password-checker" style={linkStyle}>Password Checker</Link>
+            <Link to="/ai-chatbot" style={linkStyle}>AI Chatbot</Link>
             <Link to="/dashboard" style={linkStyle}>Dashboard</Link>
+            <Link to="/settings" style={linkStyle}>Settings</Link>
           </>
+        )}
+        {!token && (
+          <Link to="/password-checker" style={linkStyle}>Password Checker</Link>
         )}
       </div>
 

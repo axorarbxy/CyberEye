@@ -83,24 +83,33 @@ router.post('/qr', protect, upload.single('qr'), async (req, res) => {
       qr.decode(image.bitmap);
     });
 
-    // Feed the decoded URL into the same trained phishing model
+    // Resolve the final URL after following any redirects (e.g. shorteners)
+    let finalUrl = decodedUrl;
+    try {
+      const redirectCheck = await fetch(decodedUrl, { method: 'HEAD', redirect: 'follow' });
+      finalUrl = redirectCheck.url;
+    } catch (e) {
+      finalUrl = decodedUrl;
+    }
+
+    // Feed the final resolved URL into the trained phishing model
     const mlResponse = await fetch('http://localhost:8000/predict-url', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: decodedUrl })
+      body: JSON.stringify({ url: finalUrl })
     });
     const mlData = await mlResponse.json();
 
     const result = await ScanResult.create({
       scanType: 'url',
-      input: decodedUrl,
+      input: finalUrl,
       riskScore: mlData.confidence,
       verdict: mlData.is_phishing ? 'malicious' : 'safe',
-      details: { source: 'qr-upload', is_phishing: mlData.is_phishing, confidence: mlData.confidence },
+      details: { source: 'qr-upload', decodedUrl, finalUrl, is_phishing: mlData.is_phishing, confidence: mlData.confidence },
       scannedBy: req.user._id
     });
 
-    res.status(201).json({ ...result.toObject(), decodedUrl });
+    res.status(201).json({ ...result.toObject(), decodedUrl: finalUrl });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

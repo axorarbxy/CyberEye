@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UrlScanner from "./pages/UrlScanner";
 import MalwareScanner from "./pages/MalwareScanner";
 import QrScanner from "./pages/QrScanner";
+import AndroidScanner from "./pages/AndroidScanner";
+import Reports from "./pages/Reports";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -56,6 +58,22 @@ function App() {
           element={
             <ProtectedRoute>
               <QrScanner />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/android-scanner"
+          element={
+            <ProtectedRoute>
+              <AndroidScanner />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <Reports />
             </ProtectedRoute>
           }
         />

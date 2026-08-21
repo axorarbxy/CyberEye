@@ -1,10 +1,11 @@
 const AI_DOMAINS = [
+  "chatgpt.com",
   "chat.openai.com",
   "api.openai.com",
   "claude.ai",
   "api.anthropic.com",
-  "bard.google.com",
   "gemini.google.com",
+  "aistudio.google.com",
   "perplexity.ai"
 ];
 

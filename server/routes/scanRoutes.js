@@ -114,14 +114,56 @@ router.post('/android', protect, upload.single('apk'), async (req, res) => {
       return res.status(400).json({ error: 'APK file is required' });
     }
 
+    const apiKey = process.env.VIRUSTOTAL_API_KEY;
+
+    const form = new FormData();
+    form.append('file', fs.createReadStream(req.file.path), req.file.originalname);
+
+    const uploadResponse = await axios.post(
+      'https://www.virustotal.com/api/v3/files',
+      form,
+      { headers: { ...form.getHeaders(), 'x-apikey': apiKey } }
+    );
+
+    const analysisId = uploadResponse.data.data.id;
+
+    let status = 'queued';
+    let stats = null;
+
+    for (let i = 0; i < 20; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      const analysisResponse = await axios.get(
+        `https://www.virustotal.com/api/v3/analyses/${analysisId}`,
+        { headers: { 'x-apikey': apiKey } }
+      );
+
+      status = analysisResponse.data.data.attributes.status;
+      stats = analysisResponse.data.data.attributes.stats;
+
+      if (status === 'completed') break;
+    }
+
+    if (status !== 'completed') {
+      throw new Error('Scan is taking longer than expected. Try again shortly.');
+    }
+
+    const maliciousCount = stats.malicious || 0;
+    const totalEngines = maliciousCount + stats.harmless + stats.suspicious + stats.undetected;
+    const isMalicious = maliciousCount > 0;
+
+    fs.unlink(req.file.path, () => {});
+
     const result = await ScanResult.create({
       scanType: 'malware',
       input: req.file.originalname,
-      riskScore: 0,
-      verdict: 'not-implemented',
+      riskScore: totalEngines > 0 ? maliciousCount / totalEngines : 0,
+      verdict: isMalicious ? 'malicious' : 'safe',
       details: {
-        size: req.file.size,
-        note: 'Android/APK analysis not yet implemented — real detection would need APK permission parsing (e.g. via apktool) or a VirusTotal file scan like the Malware Scanner uses'
+        source: 'android-apk',
+        maliciousCount,
+        totalEngines,
+        stats
       },
       scannedBy: req.user._id
     });

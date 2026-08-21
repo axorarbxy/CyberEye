@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import RiskChart from "../components/RiskChart";
 import CountUp from "../components/CountUp";
+import HoverCard from "../components/HoverCard";
 
 function Dashboard() {
   const [scans, setScans] = useState([]);
@@ -38,14 +39,6 @@ function Dashboard() {
     (s) => s.verdict !== "safe" && s.verdict !== "not-implemented"
   ).length;
 
-  const cardStyle = {
-    padding: "20px",
-    border: "1px solid var(--border)",
-    borderRadius: "10px",
-    flex: 1,
-    background: "var(--bg-panel)",
-  };
-
   return (
     <div style={{ padding: "40px 32px", maxWidth: "1000px", margin: "0 auto" }}>
       <h1 style={{ fontSize: "28px", marginBottom: "4px" }}>Dashboard</h1>
@@ -54,22 +47,22 @@ function Dashboard() {
       </p>
 
       <div style={{ display: "flex", gap: "16px", margin: "20px 0" }}>
-        <div style={cardStyle}>
+        <HoverCard style={{ padding: "20px", flex: 1 }}>
           <h3 style={{ color: "var(--text-dim)", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
             Total Scans
           </h3>
           <p style={{ fontSize: "32px", margin: "8px 0 0", fontWeight: 700, color: "var(--accent)" }}>
             <CountUp value={totalScans} />
           </p>
-        </div>
-        <div style={cardStyle}>
+        </HoverCard>
+        <HoverCard style={{ padding: "20px", flex: 1 }}>
           <h3 style={{ color: "var(--text-dim)", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
             Flagged
           </h3>
           <p style={{ fontSize: "32px", margin: "8px 0 0", fontWeight: 700, color: "var(--danger)" }}>
             <CountUp value={flaggedScans} />
           </p>
-        </div>
+        </HoverCard>
       </div>
 
       {loading && <p style={{ color: "var(--text-dim)" }}>Loading scan history...</p>}

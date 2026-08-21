@@ -35,6 +35,8 @@ function reportFlaggedEvent(url, domain, reason) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ url, domain, reason, timestamp: Date.now() })
+  }).then((res) => {
+    console.log("Reported to backend, status:", res.status);
   }).catch((err) => {
     console.error("Failed to report shadow AI event:", err);
   });
@@ -49,21 +51,31 @@ function reportFlaggedEvent(url, domain, reason) {
 chrome.webRequest.onBeforeRequest.addListener(
   (details) => {
     if (isAiDomain(details.url)) {
+      console.log("AI domain request detected:", details.url);
+      console.log("Has requestBody:", !!details.requestBody);
+      console.log("Has raw:", !!(details.requestBody && details.requestBody.raw));
+
       let bodyText = "";
       if (details.requestBody && details.requestBody.raw) {
         try {
           bodyText = decodeURIComponent(
             String.fromCharCode.apply(null, new Uint8Array(details.requestBody.raw[0].bytes))
           );
+          console.log("Decoded body:", bodyText.substring(0, 200));
         } catch (e) {
+          console.log("Decode failed:", e.message);
           bodyText = "";
         }
+      } else {
+        console.log("No raw body available for this request");
       }
 
       if (containsSensitiveData(bodyText)) {
         const hostname = new URL(details.url).hostname;
         console.log("Shadow AI flagged:", details.url);
         reportFlaggedEvent(details.url, hostname, "Sensitive data pattern detected");
+      } else {
+        console.log("No sensitive pattern matched in this request");
       }
     }
   },

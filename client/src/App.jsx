@@ -16,13 +16,40 @@ import BlurText from "./components/BlurText";
 
 function Home() {
   return (
-    <div style={{ padding: "24px" }}>
-      <h1 style={{ fontSize: "32px" }}>
-        <BlurText text="Cybereye" />
-      </h1>
-      <p>
-        <BlurText text="AI-Driven Threat Detection Platform" delay={0.04} />
-      </p>
+    <div style={{
+      position: "relative",
+      minHeight: "600px",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      textAlign: "center",
+      background: "radial-gradient(circle at 50% 100%, rgba(52,211,153,0.08), transparent 50%), var(--bg, #0B1220)",
+    }}>
+      <div style={{ maxWidth: "600px" }}>
+        <h1 style={{
+          fontSize: "56px",
+          fontWeight: 800,
+          margin: 0,
+          background: "linear-gradient(90deg, #4ea8de, #34d399)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+        }}>
+          <BlurText text="Cybereye" />
+        </h1>
+        <p style={{ fontSize: "20px", marginTop: "12px", color: "var(--text, #fff)" }}>
+          AI-Driven{" "}
+          <span style={{ color: "#22d3ee", fontWeight: 600 }}>Threat Detection</span>{" "}
+          Platform
+        </p>
+        <div style={{
+          width: "160px",
+          height: "3px",
+          borderRadius: "2px",
+          background: "linear-gradient(90deg, transparent, #34d399, transparent)",
+          margin: "16px auto 0",
+        }} />
+      </div>
     </div>
   );
 }

@@ -247,6 +247,18 @@ router.post('/shadow-ai', async (req, res) => {
   }
 });
 
+// GET /api/scan/shadow-ai-history
+router.get('/shadow-ai-history', async (req, res) => {
+  try {
+    const results = await ScanResult.find({ scanType: 'shadow-ai' })
+      .sort({ createdAt: -1 })
+      .limit(50);
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/scan/history
 router.get('/history', protect, async (req, res) => {
   try {

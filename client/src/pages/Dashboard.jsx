@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
 import RiskChart from "../components/RiskChart";
-import CountUp from "../components/CountUp";
-import HoverCard from "../components/HoverCard";
+import StatCard from "../components/StatCard";
+
+function buildTrend(items) {
+  const sorted = [...items].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  return sorted.map((_, i) => ({ value: i + 1 }));
+}
 
 function Dashboard() {
   const [scans, setScans] = useState([]);
+  const [shadowAiEvents, setShadowAiEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     fetchHistory();
+    fetchShadowAiHistory();
   }, []);
 
   const fetchHistory = async () => {
@@ -18,13 +24,9 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("cybereye_token");
       const response = await fetch("http://localhost:5000/api/scan/history", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+        headers: { "Authorization": `Bearer ${token}` }
       });
-      if (!response.ok) {
-        throw new Error("Failed to fetch scan history");
-      }
+      if (!response.ok) throw new Error("Failed to fetch scan history");
       const data = await response.json();
       setScans(data);
     } catch (err) {
@@ -34,35 +36,65 @@ function Dashboard() {
     }
   };
 
+  const fetchShadowAiHistory = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/scan/shadow-ai-history");
+      if (!response.ok) return;
+      const data = await response.json();
+      setShadowAiEvents(data);
+    } catch (err) {
+      // supplementary section, fail silently
+    }
+  };
+
   const totalScans = scans.length;
-  const flaggedScans = scans.filter(
-    (s) => s.verdict !== "safe" && s.verdict !== "not-implemented"
-  ).length;
+  const flaggedList = scans.filter((s) => s.verdict !== "safe" && s.verdict !== "not-implemented");
+  const flaggedScans = flaggedList.length;
 
   return (
-    <div style={{ padding: "40px 32px", maxWidth: "1000px", margin: "0 auto" }}>
-      <h1 style={{ fontSize: "28px", marginBottom: "4px" }}>Dashboard</h1>
+    <div style={{ padding: "40px 32px", maxWidth: "1100px", margin: "0 auto" }}>
+      <h1 style={{
+        fontSize: "32px",
+        fontWeight: 800,
+        marginBottom: "4px",
+        background: "linear-gradient(90deg, #4ea8de, #82c49a)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+      }}>
+        Dashboard
+      </h1>
       <p style={{ color: "var(--text-dim)", marginBottom: "24px" }}>
         Overview of recent scans and flagged threats.
       </p>
 
       <div style={{ display: "flex", gap: "16px", margin: "20px 0" }}>
-        <HoverCard style={{ padding: "20px", flex: 1 }}>
-          <h3 style={{ color: "var(--text-dim)", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Total Scans
-          </h3>
-          <p style={{ fontSize: "32px", margin: "8px 0 0", fontWeight: 700, color: "var(--accent)" }}>
-            <CountUp value={totalScans} />
-          </p>
-        </HoverCard>
-        <HoverCard style={{ padding: "20px", flex: 1 }}>
-          <h3 style={{ color: "var(--text-dim)", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Flagged
-          </h3>
-          <p style={{ fontSize: "32px", margin: "8px 0 0", fontWeight: 700, color: "var(--danger)" }}>
-            <CountUp value={flaggedScans} />
-          </p>
-        </HoverCard>
+        <StatCard
+          icon="📋"
+          label="TOTAL SCANS"
+          value={totalScans}
+          trendData={buildTrend(scans)}
+          gradient="linear-gradient(135deg, rgba(99,102,241,0.25), rgba(99,102,241,0.05))"
+          accentColor="#818cf8"
+          lineColor="#818cf8"
+        />
+        <StatCard
+          icon="🚩"
+          label="FLAGGED"
+          value={flaggedScans}
+          trendData={buildTrend(flaggedList)}
+          gradient="linear-gradient(135deg, rgba(52,211,153,0.22), rgba(52,211,153,0.05))"
+          accentColor="#f87171"
+          lineColor="#34d399"
+        />
+        <StatCard
+          icon="✨"
+          label="SHADOW AI EVENTS"
+          value={shadowAiEvents.length}
+          trendData={buildTrend(shadowAiEvents)}
+          gradient="linear-gradient(135deg, rgba(52,211,153,0.22), rgba(52,211,153,0.05))"
+          accentColor="#fbbf24"
+          lineColor="#34d399"
+        />
       </div>
 
       {loading && <p style={{ color: "var(--text-dim)" }}>Loading scan history...</p>}
@@ -74,7 +106,7 @@ function Dashboard() {
             border: "1px solid var(--border)",
             borderRadius: "10px",
             overflow: "hidden",
-            marginTop: "8px",
+            marginTop: "24px",
           }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
@@ -96,9 +128,10 @@ function Dashboard() {
                 ) : (
                   scans.map((scan) => {
                     const isSafe = scan.verdict === "safe";
+                    const icon = scan.scanType === "malware" ? "🐛" : scan.scanType === "url" ? "🔗" : "🛡";
                     return (
                       <tr key={scan._id} style={{ borderTop: "1px solid var(--border)" }}>
-                        <td style={{ padding: "12px 16px", fontSize: "14px" }}>{scan.scanType}</td>
+                        <td style={{ padding: "12px 16px", fontSize: "14px" }}>{icon} {scan.scanType}</td>
                         <td style={{ padding: "12px 16px", fontSize: "14px", color: "var(--text-dim)" }}>{scan.input}</td>
                         <td style={{ padding: "12px 16px", fontSize: "14px" }}>
                           <span style={{
@@ -126,6 +159,47 @@ function Dashboard() {
 
           <div style={{ marginTop: "24px" }}>
             <RiskChart scans={scans} />
+          </div>
+
+          <div style={{ marginTop: "32px" }}>
+            <h2 style={{ fontSize: "20px", marginBottom: "4px" }}>Shadow AI Activity</h2>
+            <p style={{ color: "var(--text-dim)", fontSize: "13px", marginBottom: "16px" }}>
+              Org-wide events flagged by the Shadow AI Sentinel browser extension, across all devices.
+            </p>
+            <div style={{
+              border: "1px solid var(--border)",
+              borderRadius: "10px",
+              overflow: "hidden",
+            }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ textAlign: "left", background: "var(--bg-panel)" }}>
+                    <th style={{ padding: "12px 16px", color: "var(--text-dim)", fontSize: "13px", fontWeight: 600 }}>AI Domain</th>
+                    <th style={{ padding: "12px 16px", color: "var(--text-dim)", fontSize: "13px", fontWeight: 600 }}>Reason</th>
+                    <th style={{ padding: "12px 16px", color: "var(--text-dim)", fontSize: "13px", fontWeight: 600 }}>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {shadowAiEvents.length === 0 ? (
+                    <tr>
+                      <td colSpan="3" style={{ padding: "16px", color: "var(--text-dim)" }}>
+                        No Shadow AI events detected yet.
+                      </td>
+                    </tr>
+                  ) : (
+                    shadowAiEvents.map((event) => (
+                      <tr key={event._id} style={{ borderTop: "1px solid var(--border)" }}>
+                        <td style={{ padding: "12px 16px", fontSize: "14px" }}>{event.details?.domain || "Unknown"}</td>
+                        <td style={{ padding: "12px 16px", fontSize: "14px", color: "var(--text-dim)" }}>{event.details?.reason || "—"}</td>
+                        <td style={{ padding: "12px 16px", fontSize: "14px", color: "var(--text-dim)" }}>
+                          {new Date(event.createdAt).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </>
       )}

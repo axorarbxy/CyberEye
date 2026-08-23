@@ -24,29 +24,29 @@ function Home() {
       alignItems: "center",
       justifyContent: "center",
       textAlign: "center",
-      background: "radial-gradient(circle at 50% 100%, rgba(52,211,153,0.08), transparent 50%), var(--bg, #0B1220)",
+      background: "radial-gradient(circle at 50% 100%, rgba(57,255,20,0.08), transparent 50%), var(--bg)",
     }}>
       <div style={{ maxWidth: "600px" }}>
         <h1 style={{
           fontSize: "56px",
           fontWeight: 800,
           margin: 0,
-          background: "linear-gradient(90deg, #4ea8de, #34d399)",
+          background: "linear-gradient(90deg, #39ff14, #adff2f)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
         }}>
           <BlurText text="Cybereye" />
         </h1>
-        <p style={{ fontSize: "20px", marginTop: "12px", color: "var(--text, #fff)" }}>
+        <p style={{ fontSize: "20px", marginTop: "12px", color: "var(--text)" }}>
           AI-Driven{" "}
-          <span style={{ color: "#22d3ee", fontWeight: 600 }}>Threat Detection</span>{" "}
+          <span style={{ color: "#39ff14", fontWeight: 600 }}>Threat Detection</span>{" "}
           Platform
         </p>
         <div style={{
           width: "160px",
           height: "3px",
           borderRadius: "2px",
-          background: "linear-gradient(90deg, transparent, #34d399, transparent)",
+          background: "linear-gradient(90deg, transparent, #39ff14, transparent)",
           margin: "16px auto 0",
         }} />
       </div>

@@ -57,7 +57,7 @@ function Dashboard() {
         fontSize: "32px",
         fontWeight: 800,
         marginBottom: "4px",
-        background: "linear-gradient(90deg, #4ea8de, #82c49a)",
+        background: "linear-gradient(90deg, #39ff14, #adff2f)",
         WebkitBackgroundClip: "text",
         WebkitTextFillColor: "transparent",
       }}>
@@ -73,27 +73,27 @@ function Dashboard() {
           label="TOTAL SCANS"
           value={totalScans}
           trendData={buildTrend(scans)}
-          gradient="linear-gradient(135deg, rgba(99,102,241,0.25), rgba(99,102,241,0.05))"
-          accentColor="#818cf8"
-          lineColor="#818cf8"
+          gradient="linear-gradient(135deg, rgba(57,255,20,0.20), rgba(57,255,20,0.04))"
+          accentColor="#39ff14"
+          lineColor="#39ff14"
         />
         <StatCard
           icon="🚩"
           label="FLAGGED"
           value={flaggedScans}
           trendData={buildTrend(flaggedList)}
-          gradient="linear-gradient(135deg, rgba(52,211,153,0.22), rgba(52,211,153,0.05))"
-          accentColor="#f87171"
-          lineColor="#34d399"
+          gradient="linear-gradient(135deg, rgba(255,59,59,0.18), rgba(255,59,59,0.04))"
+          accentColor="#ff3b3b"
+          lineColor="#39ff14"
         />
         <StatCard
           icon="✨"
           label="SHADOW AI EVENTS"
           value={shadowAiEvents.length}
           trendData={buildTrend(shadowAiEvents)}
-          gradient="linear-gradient(135deg, rgba(52,211,153,0.22), rgba(52,211,153,0.05))"
-          accentColor="#fbbf24"
-          lineColor="#34d399"
+          gradient="linear-gradient(135deg, rgba(173,255,47,0.18), rgba(173,255,47,0.04))"
+          accentColor="#adff2f"
+          lineColor="#39ff14"
         />
       </div>
 
@@ -139,7 +139,7 @@ function Dashboard() {
                             borderRadius: "999px",
                             fontSize: "12px",
                             fontWeight: 600,
-                            background: isSafe ? "rgba(74, 222, 128, 0.15)" : "rgba(248, 113, 113, 0.15)",
+                            background: isSafe ? "rgba(57, 255, 20, 0.15)" : "rgba(255, 59, 59, 0.15)",
                             color: isSafe ? "var(--success)" : "var(--danger)",
                           }}>
                             {scan.verdict}

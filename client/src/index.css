@@ -5,22 +5,22 @@
 }
 
 :root {
-  --bg: #0B1220;
-  --bg-panel: #121B2E;
-  --border: #223049;
-  --text: #E6EDF7;
-  --text-dim: #8B9AB3;
-  --accent: #22D3EE;
-  --accent-dim: #0E7490;
-  --danger: #F87171;
-  --success: #4ADE80;
+  --bg: #050805;
+  --bg-panel: #0a120a;
+  --border: #1a331a;
+  --text: #e0ffe0;
+  --text-dim: #7fbf7f;
+  --accent: #39ff14;
+  --accent2: #00ff41;
+  --accent3: #adff2f;
+  --danger: #ff3b3b;
+  --success: #39ff14;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg);
   color: var(--text);
-  min-height: 100vh;
 }
 
 a {
@@ -30,14 +30,8 @@ a {
 
 button {
   font-family: inherit;
-  cursor: pointer;
 }
 
 input {
   font-family: inherit;
-}
-
-h1, h2, h3 {
-  font-weight: 700;
-  letter-spacing: -0.02em;
 }

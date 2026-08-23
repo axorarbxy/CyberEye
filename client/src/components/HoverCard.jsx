@@ -5,7 +5,7 @@ function HoverCard({ children, style = {} }) {
     <motion.div
       whileHover={{
         y: -4,
-        boxShadow: "0 12px 24px rgba(78, 168, 222, 0.15)",
+        boxShadow: "0 12px 24px rgba(57, 255, 20, 0.25)",
       }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       style={{

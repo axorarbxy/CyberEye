@@ -13,6 +13,7 @@ import AiChatbot from "./pages/AiChatbot";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import Settings from "./pages/Settings";
+import BlurText from "./components/BlurText";
 
 import homeLeftImg from "./assets/home-left.jpg";
 import homeRightImg from "./assets/home-right.jpg";
@@ -39,10 +40,12 @@ function Home() {
       {/* CENTER CONTENT */}
       <section className="home-content">
 
-        <h1 className="home-title">
-          Cybereye
-        </h1>
-
+        <BlurText
+          as="h1"
+          text="Cybereye"
+          className="home-title"
+          delay={0.06}
+        />
 
         <p className="home-tagline">
           AI-Driven{" "}
